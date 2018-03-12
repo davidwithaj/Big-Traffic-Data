@@ -17,11 +17,11 @@ def update_database(rows,skip): #how many rows should be extracted from the file
     return cum_trips, d, y
 
 indexNumber = 0
-rows = 100000
+rows = 1000
 skip = 1
 cum_trips, d, y = update_database(rows,skip)
-X = deque(maxlen=100000) 	#deque(maxlen=len(cum_trips))
-Y = deque(maxlen=100000)	#deque(maxlen=len(cum_trips))
+X = deque(maxlen=10000) 	#deque(maxlen=len(cum_trips))
+Y = deque(maxlen=10000)	#deque(maxlen=len(cum_trips))
 
 
 app = dash.Dash('traffic_data')
@@ -29,7 +29,7 @@ app.layout = html.Div(children = [
 	html.H1("The Heartbeat of Taxi Pickups"),
 	html.H2("Dynamically updating the line graph to portray a heartbeat"),
 	dcc.Graph(id = 'live-graph', animate = True),
-	dcc.Interval(id= 'update-graph', interval = 1000) 
+	dcc.Interval(id= 'update-graph', interval = 250) 
 	])
 
 @app.callback(Output("live-graph","figure"), events = [Event("update-graph",'interval')]) #wrapper
@@ -53,11 +53,11 @@ def graph_update():
 	if indexNumber == len(cum_trips)-1: #redefine the variables with a new dataset
 		indexNumber = 0
 		skip = rows
-		rows += 10000
+		rows += 1000
 		cum_trips, d, y = update_database(rows,skip)
 	else:
 		indexNumber += 1
-	return {"data":[data],"layout": go.Layout(xaxis = dict(range=[min(X),max(X)]), yaxis = dict(range=[-1,20]))} #	yaxis = dict(range=[min(Y),max(Y)]
+	return {"data":[data],"layout": go.Layout( xaxis = dict(range= [min(d),max(d)]) ,yaxis = dict(range=[-1,20]))} #	yaxis = dict(range=[min(Y),max(Y)]
 
 
 if __name__ == "__main__":
